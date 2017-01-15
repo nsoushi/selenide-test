@@ -6,8 +6,6 @@ import com.codeborne.selenide.WebDriverRunner
 import io.kotlintest.specs.BehaviorSpec
 import nsoushi.selenide.spec.features.auth.AuthCodeSpec
 import nsoushi.selenide.spec.fixtures.auth.AuthCodeFixture
-import nsoushi.selenide.spec.operators.auth.AuthCodeOperator
-import nsoushi.selenide.spec.operators.program.ProgramOperator
 import nsoushi.selenide.spec.pages.auth.AuthCodePage
 import nsoushi.selenide.spec.pages.program.ProgramPage
 import org.openqa.selenium.WebDriver
@@ -19,7 +17,6 @@ import org.openqa.selenium.WebDriver
 class ProgramSpec : BehaviorSpec() {
 
     lateinit var targetPage: ProgramPage
-    lateinit var operator: ProgramOperator
 
     companion object {
         const val channelCode = "sibchtv"
@@ -29,7 +26,6 @@ class ProgramSpec : BehaviorSpec() {
 
     override fun beforeEach() {
         targetPage = ProgramPage()
-        operator = ProgramOperator()
 
         Configuration.browser = WebDriverRunner.CHROME;
         System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe")
@@ -46,9 +42,9 @@ class ProgramSpec : BehaviorSpec() {
                     // スクリーンショットを保存
                     targetPage.storeImageToFs(targetPage.takeScreenshot(driver), "./screenshots/program.png")
                     // プレイヤーモジュールがあるか
-                    targetPage.getPlayerElement().`is`(enabled) shouldBe true
+                    targetPage.hasPlayerModule() shouldBe true
                     // ヘッダーモジュールがあるか
-                    targetPage.getHeaderElement().`is`(enabled) shouldBe true
+                    targetPage.hasHeaderModule() shouldBe true
                 })
             }
 
@@ -62,14 +58,14 @@ class ProgramSpec : BehaviorSpec() {
                     targetPage.open(driver, targetUrl, null)
 
                     // フォローする
-                    operator.follow(targetPage)
+                    targetPage.executeFollow()
                     // フォローできているか
-                    targetPage.getHeaderModule().isFollowing() shouldBe true
+                    targetPage.isFollowing() shouldBe true
 
                     // フォローを解除する
-                    operator.follow(targetPage)
+                    targetPage.executeFollow()
                     // フォローを解除できているか
-                    targetPage.getHeaderModule().isFollowing() shouldBe false
+                    targetPage.isFollowing() shouldBe false
                 }
             }
         }
@@ -78,14 +74,13 @@ class ProgramSpec : BehaviorSpec() {
     private fun login(code: String): WebDriver {
 
         val authCodePage = AuthCodePage()
-        val authCodeOperator = AuthCodeOperator()
 
         // fixture
         val authCode = AuthCodeFixture(code)
         // 認証ページへアクセス
         val driver = authCodePage.open(AuthCodeSpec.targetUrl, null)
         // 認証コードの入力
-        authCodeOperator.auth(authCodePage, authCode.code)
+        authCodePage.executeAuth(authCode.code)
 
         return driver
     }

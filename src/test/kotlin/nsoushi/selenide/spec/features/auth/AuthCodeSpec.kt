@@ -1,12 +1,10 @@
 package nsoushi.selenide.spec.features.auth
 
-import com.codeborne.selenide.Condition.enabled
+import com.codeborne.selenide.Configuration
+import com.codeborne.selenide.WebDriverRunner
 import io.kotlintest.specs.BehaviorSpec
 import nsoushi.selenide.spec.fixtures.auth.AuthCodeFixture
-import nsoushi.selenide.spec.operators.auth.AuthCodeOperator
 import nsoushi.selenide.spec.pages.auth.AuthCodePage
-import nsoushi.selenide.spec.pages.program.ProgramPage
-import org.openqa.selenium.WebDriver
 
 /**
  *
@@ -15,7 +13,6 @@ import org.openqa.selenium.WebDriver
 class AuthCodeSpec : BehaviorSpec() {
 
     lateinit var targetPage: AuthCodePage
-    lateinit var operator: AuthCodeOperator
 
     companion object {
         const val targetUrl: String = "https://freshlive.tv/auth/code"
@@ -23,7 +20,9 @@ class AuthCodeSpec : BehaviorSpec() {
 
     override fun beforeEach() {
         targetPage = AuthCodePage()
-        operator = AuthCodeOperator()
+
+        Configuration.browser = WebDriverRunner.CHROME;
+        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe")
     }
 
     init {
@@ -34,10 +33,11 @@ class AuthCodeSpec : BehaviorSpec() {
                 then("画面構成に必要なモジュールがある") {
 
                     // 認証ページへアクセス
-                    targetPage.open(targetUrl, null)
-
+                    val driver = targetPage.open(targetUrl, null)
+                    // スクリーンショットを保存
+                    targetPage.storeImageToFs(targetPage.takeScreenshot(driver), "./screenshots/auth_code.png")
                     // 認証フォームモジュールがあるか
-                    targetPage.getCodeBodyElement().`is`(enabled) shouldBe true
+                    targetPage.hasCodeBodyModule() shouldBe true
                 }
             }
 
@@ -46,16 +46,15 @@ class AuthCodeSpec : BehaviorSpec() {
                 then("ログインができる") {
 
                     // fixture
-                    val authCode = AuthCodeFixture()
+                    val authCode = AuthCodeFixture("test_code:xxxxx")
                     // 認証ページへアクセス
                     val driver = targetPage.open(targetUrl, null)
                     // 認証コードの入力
-                    operator.auth(targetPage, authCode.code)
+                    targetPage.executeAuth(authCode.code)
                     // トップへアクセス
                     targetPage.open(driver, "https://freshlive.tv/", null)
                 }
             }
-
         }
     }
 }

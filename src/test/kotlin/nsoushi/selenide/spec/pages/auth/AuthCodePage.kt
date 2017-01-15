@@ -1,29 +1,23 @@
 package nsoushi.selenide.spec.pages.auth
 
-import com.codeborne.selenide.Condition.*
-import com.codeborne.selenide.SelenideElement
+import com.codeborne.selenide.Condition.enabled
 import nsoushi.selenide.spec.modules.auth.AuthCodeBodyModule
-import nsoushi.selenide.spec.modules.program.ProgramHeaderModule
-import nsoushi.selenide.spec.modules.program.ProgramPlayerModule
+import nsoushi.selenide.spec.operators.auth.AuthCodeOperatorImpl
 
 /**
  * 認証ページにあるモジュールの要素を扱うPageクラス
  *
  * @author nsoushi
  */
-class AuthCodePage : AuthCodePageBase(AuthCodeBodyModule()) {
-
-    /**
-     * 認証コード入力モジュールの取得
-     */
-    fun getCodeBodyModule() : AuthCodeBodyModule {
-        return codeBodyModule()
-    }
+class AuthCodePage : AuthCodePageBase(AuthCodeOperatorImpl(), AuthCodeBodyModule()) {
 
     /**
      * 認証コード入力要素の取得
      */
-    fun getCodeBodyElement() : SelenideElement {
-        return codeBodyModule().getElement()
-    }
+    fun hasCodeBodyModule() = codeBodyModule().getElement().`is`(enabled)
+
+    /**
+     * 認証コードを入力して認証する
+     */
+    fun executeAuth(code: String) = auth(code)
 }

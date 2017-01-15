@@ -1,11 +1,9 @@
 package nsoushi.selenide.spec.pages.program
 
-import com.codeborne.selenide.SelenideElement
 import nsoushi.selenide.spec.modules.program.ProgramHeaderModule
 import nsoushi.selenide.spec.modules.program.ProgramPlayerModule
-import nsoushi.selenide.spec.pages.Page
+import nsoushi.selenide.spec.operators.program.ProgramOperatorBase
 import nsoushi.selenide.spec.pages.PageBase
-import nsoushi.selenide.spec.support.ScreenshotSupport
 import nsoushi.selenide.spec.support.ScreenshotSupportImpl
 
 /**
@@ -14,8 +12,10 @@ import nsoushi.selenide.spec.support.ScreenshotSupportImpl
  * @author nsoushi
  */
 abstract class ProgramPageBase constructor(
+        private val programOperator: ProgramOperatorBase,
         private val playerModule: ProgramPlayerModule,
-        private val headerModule: ProgramHeaderModule) : PageBase(ScreenshotSupportImpl()) {
+        private val headerModule: ProgramHeaderModule
+) : PageBase(ScreenshotSupportImpl()), ProgramOperatorBase by programOperator {
 
     /**
      * 動画プレイヤーモジュールの取得
@@ -29,5 +29,12 @@ abstract class ProgramPageBase constructor(
      */
     protected fun headerModule(): ProgramHeaderModule {
         return headerModule
+    }
+
+    /**
+     * 番組をフォローする
+     */
+    protected fun follow() {
+        programOperator.follow(headerModule)
     }
 }

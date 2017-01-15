@@ -1,41 +1,34 @@
 package nsoushi.selenide.spec.pages.program
 
-import com.codeborne.selenide.SelenideElement
+import com.codeborne.selenide.Condition.enabled
 import nsoushi.selenide.spec.modules.program.ProgramHeaderModule
 import nsoushi.selenide.spec.modules.program.ProgramPlayerModule
+import nsoushi.selenide.spec.operators.program.ProgramOperatorBaseImpl
 
 /**
  * 番組ページにあるモジュールの要素を扱うPageクラス
  *
  * @author nsoushi
  */
-class ProgramPage : ProgramPageBase(ProgramPlayerModule(), ProgramHeaderModule()) {
+class ProgramPage : ProgramPageBase(ProgramOperatorBaseImpl(), ProgramPlayerModule(), ProgramHeaderModule()) {
 
     /**
-     * 動画プレイヤーモジュールの取得
+     * 動画プレイヤーモジュールが配置されているか
      */
-    fun getPlayerModule() : ProgramPlayerModule {
-        return playerModule()
-    }
+    fun hasPlayerModule() = playerModule().getElement().`is`(enabled)
 
     /**
-     * 動画プレイヤー要素の取得
+     * 動画情報モジュールが配置されているか
      */
-    fun getPlayerElement() : SelenideElement {
-        return playerModule().getElement()
-    }
+    fun hasHeaderModule() = headerModule().getElement().`is`(enabled)
 
     /**
-     * 動画情報モジュールの取得
+     * 番組をフォローする
      */
-    fun getHeaderModule() : ProgramHeaderModule {
-        return headerModule()
-    }
+    fun executeFollow() = follow()
 
     /**
-     * 動画情報要素の取得
+     * 番組をフォローしているか
      */
-    fun getHeaderElement() : SelenideElement {
-        return headerModule().getElement()
-    }
+    fun isFollowing(): Boolean = headerModule().isFollowing() == true
 }

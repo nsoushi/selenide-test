@@ -1,5 +1,6 @@
 package nsoushi.selenide.spec.operators.program
 
+import nsoushi.selenide.spec.modules.program.ProgramHeaderModule
 import nsoushi.selenide.spec.pages.program.ProgramPage
 
 /**
@@ -7,13 +8,13 @@ import nsoushi.selenide.spec.pages.program.ProgramPage
  *
  * @author nsoushi
  */
-class ProgramOperator {
+class ProgramOperatorBaseImpl : ProgramOperatorBase {
 
     /**
      * 番組をフォローします
      */
-    fun follow(page: ProgramPage) {
+    override fun follow(module: ProgramHeaderModule) {
         // フォローする
-        page.getHeaderModule().getFollowButtonElement().click()
+        module.getFollowButtonElement().click()
     }
 }
